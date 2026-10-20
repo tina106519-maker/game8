@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>光的折射大冒險</title>
+<style>
+:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--ink:#1d3557;--sun:#ffd23f;--sea:#2ec4b6;--pink:#ff6b9d;--card:#fffdf5}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;color:var(--ink);background:linear-gradient(180deg,#8fd3ff 0%,#c9f0ff 55%,#fff3b0 100%);background-color:#c9f0ff}
+.wrap{max-width:560px;margin:0 auto;padding:14px}
+h1{margin:6px 0;text-align:center;font-size:30px;letter-spacing:2px;color:#fff;text-shadow:0 3px 0 #ff6b9d,0 6px 0 rgba(29,53,87,.25)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--card);border:3px solid var(--ink);border-radius:20px;padding:8px 14px;font-weight:800}
+.dots span{display:inline-block;width:18px;height:18px;border-radius:50%;background:#dde;border:2px solid var(--ink);margin-right:4px}
+.dots .on{background:var(--sun)}
+.card{margin-top:12px;background:var(--card);border:3px solid var(--ink);border-radius:26px;padding:14px;box-shadow:0 6px 0 var(--ink)}
+.say{display:flex;gap:10px;align-items:flex-start;font-size:17px;font-weight:700;line-height:1.5}
+.mascot{font-size:44px;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px) rotate(-6deg)}}
+.scene{margin:10px 0;border-radius:18px;overflow:hidden;border:3px solid var(--ink);background:#e8f8ff}
+.scene svg{display:block;width:100%;height:auto;max-height:260px}
+.btn{font:inherit;font-weight:800;font-size:18px;color:var(--ink);background:var(--sun);border:3px solid var(--ink);border-radius:16px;padding:10px 16px;cursor:pointer;box-shadow:0 4px 0 var(--ink);width:100%;margin-top:8px}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.pour{background:var(--sea);color:#fff;margin:0 0 8px}
+.opt{background:#fff;text-align:left;display:flex;gap:10px;align-items:center}
+.opt.good{background:#b9f6ca}.opt.bad{background:#ffc9d6}
+.opt:disabled{cursor:default}
+.mini{flex:none;width:88px;height:70px;border-radius:10px;border:2px solid var(--ink)}
+.fb{margin-top:10px;padding:10px 12px;border-radius:16px;background:#fff3b0;border:3px dashed var(--ink);font-weight:700;line-height:1.6;animation:pop .35s}
+@keyframes pop{from{transform:scale(.85);opacity:0}}
+.end{text-align:center}.end .big{font-size:56px;letter-spacing:6px}
+.fx{position:fixed;top:-30px;font-size:28px;pointer-events:none;animation:fall 1.6s linear forwards;z-index:9}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+/* scenes */
+.water{opacity:0;transition:opacity .6s}.poured .water{opacity:.55}
+.low{transition:transform .6s}.poured .low{transform:translateX(-17px)}
+.hid{display:none}.poured .hid{display:inline}.poured .vis{display:none}
+.real{opacity:0;transition:opacity .6s}.reveal .real{opacity:1}
+.beam{stroke-dasharray:300;animation:draw 1.8s ease-out infinite}
+@keyframes draw{from{stroke-dashoffset:300}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🌈 光的折射大冒險</h1>
+  <div id="app"></div>
+</div>
+<script>
+const WATER='<rect class="water" x="62" y="100" width="96" height="98" fill="#4aa8ff"/>';
+const S={
+straw:`<svg viewBox="0 0 220 220" id="sc"><rect width="220" height="220" fill="#fff3b0"/>
+<rect x="60" y="40" width="100" height="160" rx="10" fill="#fff" fill-opacity=".5" stroke="#1d3557" stroke-width="4"/>${WATER}
+<line x1="125" y1="12" x2="112" y2="100" stroke="#ff6b9d" stroke-width="9" stroke-linecap="round"/>
+<g class="low"><line x1="112" y1="100" x2="98" y2="190" stroke="#ff6b9d" stroke-width="9" stroke-linecap="round"/></g>
+<text x="170" y="60" font-size="30">🥤</text></svg>`,
+fish:`<svg viewBox="0 0 220 220" id="sc"><rect width="220" height="100" fill="#d8f3ff"/><rect y="100" width="220" height="120" fill="#4aa8ff"/>
+<path d="M0 100q14-8 28 0t28 0 28 0 28 0 28 0 28 0 28 0 28 0" fill="none" stroke="#fff" stroke-width="3"/>
+<text x="6" y="40" font-size="34">🧒</text><line x1="40" y1="32" x2="110" y2="100" stroke="#ffd23f" stroke-width="3"/>
+<line x1="110" y1="100" x2="150" y2="140" stroke="#ffd23f" stroke-width="3" stroke-dasharray="5 5"/>
+<text x="135" y="152" font-size="30">🐟</text><text x="160" y="132" font-size="13" font-weight="800" fill="#fff">看起來在這</text>
+<g class="real"><line x1="110" y1="100" x2="140" y2="185" stroke="#fff" stroke-width="3"/><text x="124" y="205" font-size="30">🐠</text><text x="160" y="200" font-size="13" font-weight="800" fill="#fff">真的在這！</text></g></svg>`,
+coin:`<svg viewBox="0 0 220 220" id="sc"><rect width="220" height="220" fill="#fff3b0"/>
+<text x="8" y="50" font-size="34">👀</text>
+<path d="M110 90 L125 200 H195 L210 90" fill="#fff" fill-opacity=".6" stroke="#1d3557" stroke-width="4" transform="translate(-20 0)"/>
+<g class="water"><path d="M114 120 L127 198 H193 L206 120Z" fill="#4aa8ff" transform="translate(-20 0)"/></g>
+<circle cx="140" cy="190" r="10" fill="#ffd23f" stroke="#b8860b" stroke-width="3"/>
+<g class="vis"><line x1="40" y1="50" x2="90" y2="90" stroke="#ff6b9d" stroke-width="3" stroke-dasharray="5 5"/><text x="30" y="130" font-size="15" font-weight="800">被杯子擋住，看不到 😢</text></g>
+<g class="hid"><polyline points="40,50 90,90 135,185" fill="none" stroke="#ff6b9d" stroke-width="3"/><text x="30" y="130" font-size="15" font-weight="800">光轉彎了，看到啦！🎉</text></g></svg>`,
+prism:`<svg viewBox="0 0 220 220" id="sc"><rect width="220" height="220" fill="#1d3557"/>
+<line class="beam" x1="0" y1="130" x2="85" y2="115" stroke="#fff" stroke-width="5"/>
+<polygon points="110,40 60,150 160,150" fill="#b8ecff" fill-opacity=".5" stroke="#fff" stroke-width="3"/>
+${['#ff3b3b','#ff9f1c','#ffe14d','#4ade80','#38bdf8','#4f46e5','#a855f7'].map((c,i)=>`<line class="beam" x1="125" y1="${112}" x2="215" y2="${100+i*13}" stroke="${c}" stroke-width="5" style="animation-delay:${i*.1}s"/>`).join('')}
+<text x="8" y="30" font-size="16" font-weight="800" fill="#fff">白光 ➜ 三稜鏡 ➜ ？</text></svg>`
+};
+function ray(kind){
+  const end={straight:[90,80],toward:[66,80],away:[112,62]}[kind];
+  return `<svg class="mini" viewBox="0 0 100 80"><rect width="100" height="40" fill="#e8f8ff"/><rect y="40" width="100" height="40" fill="#8fd0ff"/>
+  <line x1="50" y1="0" x2="50" y2="80" stroke="#1d3557" stroke-dasharray="3 3"/><line x1="10" y1="0" x2="50" y2="40" stroke="#ff6b9d" stroke-width="3"/>
+  <line x1="50" y1="40" x2="${end[0]}" y2="${end[1]}" stroke="#ff6b9d" stroke-width="3"/></svg>`;
+}
+const Q=[
+{scene:S.straw,pour:'💧 往杯子倒水',hint:'小光：把水倒進去，看看吸管發生什麼事！',q:'吸管在水裡看起來「斷掉」了，這是為什麼？',
+ o:['水把吸管折彎了','光從水裡跑到空氣時，會轉彎（折射）','我們的眼睛花掉了'],a:1,
+ e:'光從一種物質進入另一種物質（水→空氣），速度改變，路線就會轉彎，這叫「折射」。吸管根本沒有斷喔！'},
+{scene:S.fish,hint:'小光：魚的光從水裡射出來會轉彎，所以位置被「看偏」了！',q:'想用魚叉叉魚，應該瞄準哪裡才叉得到？',
+ o:['瞄準看到的魚','瞄準看到的魚「更深」一點','瞄準看到的魚「更淺」一點'],a:1,reveal:1,
+ e:'因為折射，魚看起來比真正的位置淺。真正的魚在更深的地方，所以要瞄準下面才叉得到！'},
+{scene:S.coin,pour:'💧 往杯子倒水',hint:'小光：杯子是空的，硬幣被杯緣擋住了。倒水試試看！',q:'倒水之後，為什麼看見硬幣了？',
+ o:['水讓硬幣浮起來了','水把硬幣變不見又變出來（魔術）','硬幣的光穿出水面時折射，彎過杯緣進了眼睛'],a:2,
+ e:'硬幣反射的光離開水面時轉彎，繞過杯緣跑進眼睛，我們就看到它了！'},
+{scene:null,hint:'小光：虛線是「垂直線」。光從空氣斜著進入水中，會往哪邊彎呢？',q:'光從空氣斜射進水裡，路線是哪一種？',
+ o:['straight','toward','away'],a:1,mini:1,
+ e:'光從空氣進入水，速度變慢，會「靠近垂直線」彎折（折射角比入射角小）。'},
+{scene:S.prism,hint:'小光：白光穿過三稜鏡會發生神奇的事，彩虹也是這樣來的！',q:'白色的光通過三稜鏡，會變成什麼？',
+ o:['只剩紅色的光','變成紅橙黃綠藍靛紫的七彩光','變成黑色的光'],a:1,
+ e:'白光其實是很多顏色混在一起。不同顏色折射的角度不同，就被分開了。下雨後的彩虹就是陽光被小水珠折射、分開的喔！'}
+];
+let i=0,score=0,done=false;
+const app=document.getElementById('app');
+function confetti(){const em=['⭐','🌈','✨','🎉','💎'];for(let k=0;k<16;k++){const s=document.createElement('span');s.className='fx';s.textContent=em[k%5];s.style.left=Math.random()*95+'vw';s.style.animationDelay=Math.random()*.5+'s';document.body.appendChild(s);setTimeout(()=>s.remove(),2400)}}
+function render(){
+  if(i>=Q.length){
+    const msg=score==5?'你是「光的魔法師」！全部答對！':score>=3?'好厲害！你是「光的探險家」！':'再玩一次，你會變成光的小專家！';
+    app.innerHTML=`<div class="card end"><div class="big">${'⭐'.repeat(score)}${'☆'.repeat(5-score)}</div><h2>答對 ${score} / 5 題</h2><p style="font-size:18px;font-weight:700">${msg}</p><p>生活小任務：用杯子、水和筆，自己做一次折射實驗吧！</p><button class="btn" onclick="i=0;score=0;render()">🔄 再玩一次</button></div>`;
+    if(score>=3)confetti();return;}
+  done=false;const q=Q[i];
+  const dots=Q.map((_,k)=>`<span class="${k<i?'on':''}"></span>`).join('');
+  const opts=q.o.map((t,k)=>`<button class="btn opt" onclick="pick(${k})">${q.mini?ray(t):''}<span>${q.mini?['A　直直走過去','B　往垂直線靠近','C　離垂直線更遠'][k]:'ABC'[k]+'　'+t}</span></button>`).join('');
+  app.innerHTML=`<div class="bar"><span>第 ${i+1} 題 / 5</span><span class="dots">${dots}</span><span>⭐ ${score}</span></div>
+  <div class="card"><div class="say"><span class="mascot">🌟</span><span id="say">${q.hint}</span></div>
+  ${q.scene?`<div class="scene" id="scn">${q.scene}</div>`:''}
+  ${q.pour?`<button class="btn pour" id="pb" onclick="pour()">${q.pour}</button>`:''}
+  <p style="font-size:19px;font-weight:800;margin:8px 0">${q.q}</p><div id="opts">${opts}</div><div id="fb"></div></div>`;
+}
+function pour(){document.getElementById('sc').classList.add('poured');const b=document.getElementById('pb');b.textContent='✅ 水倒好了，仔細看！';b.disabled=true}
+function pick(k){
+  if(done)return;done=true;const q=Q[i],ok=k==q.a;
+  document.querySelectorAll('.opt').forEach((b,n)=>{b.disabled=true;if(n==q.a)b.classList.add('good');else if(n==k)b.classList.add('bad')});
+  if(q.pour)document.getElementById('sc').classList.add('poured');
+  if(q.reveal)document.getElementById('sc').classList.add('reveal');
+  if(ok){score++;confetti()}
+  document.getElementById('say').textContent=ok?'太棒了！答對了 🎉':'差一點點，沒關係，一起看答案！';
+  document.getElementById('fb').innerHTML=`<div class="fb">${ok?'✅ ':'💡 '}${q.e}</div><button class="btn" onclick="i++;render()">${i==4?'🏆 看結果':'下一題 ➜'}</button>`;
+}
+render();
+</script>
+</body>
+</html>
